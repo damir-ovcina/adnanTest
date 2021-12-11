@@ -10,6 +10,7 @@ import Invader4 from "../assets/aliens/invader4.png";
 import Invader5 from "../assets/aliens/invader5.png";
 
 const TIMER_INTERVAL = 200;
+let bulletId = 0;
 
 const GameScreen = () => {
   const [numberOfLives, setNumberOfLives] = useState(3);
@@ -22,7 +23,25 @@ const GameScreen = () => {
 
   useEffect(() => {
     initInvadersArray();
+    // movment and fiering key binding
+    initialzeKeyBindings();
   }, []);
+
+  const initialzeKeyBindings = () => {
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") {
+        moveLeft();
+      } else if (e.key === "ArrowRight") {
+        moveRight();
+      }
+    });
+
+    document.addEventListener("keyup", (e) => {
+      if (e.key === " ") {
+        createBullet();
+      }
+    });
+  };
 
   const createEnemy = (name, id) => {
     return (
@@ -64,96 +83,83 @@ const GameScreen = () => {
   let margin = 50;
   let paddingLeft = 25;
   let paddingRight = 0;
-  let marginTop = 3;
 
   const createBullet = () => {
     const bullet = document.createElement("div");
-    bullet.style.height = "2px";
-    bullet.style.width = "2px";
-    bullet.style.paddingLeft = "0px";
-    bullet.style.zIndex = 1;
-    bullet.paddingRigt = "0px";
-    bullet.paddingTop = "0px";
-    bullet.paddingBottom = "0px";
-    bullet.style.borderStyle = "solid";
-    bullet.style.borderColor = "red";
-    bullet.style.backgroundColor = "red";
-    const bullet1 = document.getElementById("defender");
-    const rec = bullet1.getBoundingClientRect();
+    bullet.id = `bullet-${bulletId}`;
+    const defender = document.getElementById("defender");
+    const rec = defender.getBoundingClientRect();
     bullet.style.top = `${rec.top}px`;
     bullet.style.left = `${rec.left}px`;
-    bullet.style.position = "fixed";
     bullet.setAttribute("class", "bullet");
-    document.getElementById("gameContainer").insertBefore(bullet, bullet1);
+    document.getElementById("gameContainer").insertBefore(bullet, defender);
+
+    bulletId++;
   };
 
   const fire = () => {
-    document.querySelectorAll(".bullet").forEach((element1) => {
-      let bullet = element1.getBoundingClientRect();
-      const rect1 = element1.getBoundingClientRect();
-      element1.style.top = `${(bullet.y -= 10)}px`;
-      if (bullet.y < 10) {
-        element1.remove();
-      }
-
-      document.querySelectorAll(".invader").forEach((element2, index) => {
-        const rect2 = element2.getBoundingClientRect();
-        let overlap = !(
-          rect1.right < rect2.left ||
-          rect1.left > rect2.right ||
-          rect1.bottom < rect2.top ||
-          rect1.top > rect2.bottom
-        );
-
-        if (overlap) {
-          // OVDJE U SUSTINI AKO POSTOJI PREKLAPANJE KORISTIM INDEX KOJI DOBIJEM
-          //U OKVIRU QUERY SELECTORA DA IZBACIM IZ NIZA VRIJEDNOST SA KLJUCEM KOJI JE
-          //IDENTICAN INDEX
-
-          //PROBLEM JE STO MI SE MJESAJU INTERVALI I SVE SE RASPADA STALNO
-          // POKUSAO SAM SA RAZNORAZNIM RIJESENJIMA TIPA CLEAR INTERVAL, RAZNORAZNA PREBACIVANJ
-          //ALI NISTA NIJE USPIJELO
-          element1.remove();
-          element2.remove();
-          //setInvaders([...invaders.filter((invader) => invader.key != index)]);
-        }
-      });
-    });
+    // document.querySelectorAll(".bullet").forEach((element1) => {
+    //   let bullet = element1.getBoundingClientRect();
+    //   const rect1 = element1.getBoundingClientRect();
+    //   element1.style.top = `${(bullet.y -= 10)}px`;
+    //   if (bullet.y < 10) {
+    //     element1.remove();
+    //   }
+    //   document.querySelectorAll(".invader").forEach((element2, index) => {
+    //     const rect2 = element2.getBoundingClientRect();
+    //     let overlap = !(
+    //       rect1.right < rect2.left ||
+    //       rect1.left > rect2.right ||
+    //       rect1.bottom < rect2.top ||
+    //       rect1.top > rect2.bottom
+    //     );
+    //     if (overlap) {
+    //       // OVDJE U SUSTINI AKO POSTOJI PREKLAPANJE KORISTIM INDEX KOJI DOBIJEM
+    //       //U OKVIRU QUERY SELECTORA DA IZBACIM IZ NIZA VRIJEDNOST SA KLJUCEM KOJI JE
+    //       //IDENTICAN INDEX
+    //       //PROBLEM JE STO MI SE MJESAJU INTERVALI I SVE SE RASPADA STALNO
+    //       // POKUSAO SAM SA RAZNORAZNIM RIJESENJIMA TIPA CLEAR INTERVAL, RAZNORAZNA PREBACIVANJ
+    //       //ALI NISTA NIJE USPIJELO
+    //       element1.remove();
+    //       element2.remove();
+    //       //setInvaders([...invaders.filter((invader) => invader.key != index)]);
+    //     }
+    //   });
+    // });
   };
 
-  const game = setInterval(() => {
-    fire();
-    paddingSetter();
-  }, TIMER_INTERVAL);
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowLeft" && margin > 2) {
+  const game = setInterval(() => {}, TIMER_INTERVAL);
+
+  const paddingSetter = () => {
+    // if (paddingRight === 35) {
+    //   document.getElementById(
+    //     "aliens"
+    //   ).style.paddingLeft = `${(paddingRight += 1)}%`;
+    //   paddingLeft = 35;
+    //   clearInterval(game);
+    //   document.getElementById("aliens").style.marginTop = `${topMargin}%`;
+    //   setSpeed(speed - 5);
+    //   setTopMargin(topMargin + 0.9);
+    // } else {
+    //   document.getElementById(
+    //     "aliens"
+    //   ).style.paddingLeft = `${(paddingRight += 1)}%`;
+    // }
+  };
+
+  function moveLeft() {
+    if (margin > 2)
       document.getElementById(
         "defender"
       ).style.marginLeft = `${(margin -= 1)}%`;
-    } else if (e.key === "ArrowRight" && margin < 95) {
+  }
+
+  function moveRight() {
+    if (margin < 95)
       document.getElementById(
         "defender"
       ).style.marginLeft = `${(margin += 1)}%`;
-    } else if (e.key === " ") {
-      createBullet();
-    }
-  });
-  const paddingSetter = () => {
-    if (paddingRight === 35) {
-      document.getElementById(
-        "aliens"
-      ).style.paddingLeft = `${(paddingRight += 1)}%`;
-      paddingLeft = 35;
-      clearInterval(game);
-      document.getElementById("aliens").style.marginTop = `${topMargin}%`;
-      setSpeed(speed - 5);
-      setTopMargin(topMargin + 0.9);
-    } else {
-      document.getElementById(
-        "aliens"
-      ).style.paddingLeft = `${(paddingRight += 1)}%`;
-    }
-  };
+  }
 
   return (
     <div className="gameContainer" id="gameContainer">

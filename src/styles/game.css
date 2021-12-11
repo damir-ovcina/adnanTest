@@ -1,33 +1,42 @@
-.gameContainer{
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-color: black;
-    height:100%;
-    width:100%
+.gameContainer {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: black;
+  height: 100%;
+  width: 100%;
 }
-.gameHeader{
-    position:fixed;
-    top:0;
-    left:0;
-    right:0;
-    text-align: center;
-    color: white;
-    width: 100%;
-    height:5%;
-    font-size: 10px;
+.gameHeader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: white;
+  width: 100%;
+  height: 5%;
+  font-size: 10px;
 }
-.invader{
-height:19.2px;
-width:19.2px;
-margin-left:1%;
-border-style: none;
-position:relative;
+.invader {
+  height: 19.2px;
+  width: 19.2px;
+  margin-left: 1%;
+  border-style: none;
+  position: relative;
 }
-.aliensContainer{
-    padding-top: 3%;
-    padding-left:13%;
-    
+.aliensContainer {
+  padding-top: 3%;
+  padding-left: 13%;
+}
+
+.bullet {
+  height: 2px;
+  width: 2px;
+  padding: 0px;
+  z-index: 1;
+  border: 1px solid red;
+  background-color: red;
+  position: fixed;
 }
