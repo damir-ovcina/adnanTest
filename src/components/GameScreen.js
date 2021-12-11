@@ -11,6 +11,7 @@ import Invader5 from "../assets/aliens/invader5.png";
 
 const TIMER_INTERVAL = 200;
 let bulletId = 0;
+let allFairedBullets = [];
 
 const GameScreen = () => {
   const [numberOfLives, setNumberOfLives] = useState(3);
@@ -25,6 +26,7 @@ const GameScreen = () => {
     initInvadersArray();
     // movment and fiering key binding
     initialzeKeyBindings();
+    gameEngine();
   }, []);
 
   const initialzeKeyBindings = () => {
@@ -88,14 +90,54 @@ const GameScreen = () => {
     const bullet = document.createElement("div");
     bullet.id = `bullet-${bulletId}`;
     const defender = document.getElementById("defender");
+
+    // position of bullet based on defender
     const rec = defender.getBoundingClientRect();
     bullet.style.top = `${rec.top}px`;
     bullet.style.left = `${rec.left}px`;
+
     bullet.setAttribute("class", "bullet");
     document.getElementById("gameContainer").insertBefore(bullet, defender);
 
     bulletId++;
+    allFairedBullets.push(bullet);
+    console.dir(allFairedBullets);
   };
+
+  function gameEngine() {
+    setInterval(() => {
+      moveBullets();
+    }, 400);
+    // move bullet
+
+    // move enemies
+    // check colision
+    // set result based on destroyed enemies
+    // check destruction of rows of enemies and replace them
+  }
+
+  // ------------------------------------------------------Bullets -----------------------------------------------------------------------------
+  function moveBullets() {
+    allFairedBullets.forEach((bullet) => {
+      moveBullet(bullet);
+      removeBulletsIfEndIsReached(bullet);
+    });
+  }
+
+  function moveBullet(bullet) {
+    let newPosition = bullet.getBoundingClientRect().y;
+    bullet.style.top = `${(newPosition -= 10)}px`;
+  }
+
+  function removeBulletsIfEndIsReached(bullet) {
+    if (bullet.getBoundingClientRect().y < 50) {
+      bullet.remove();
+      allFairedBullets.pop();
+      console.dir(allFairedBullets);
+    }
+  }
+
+  // ----------------------------------------------------------------------------------------------------------------------------------------------
 
   const fire = () => {
     // document.querySelectorAll(".bullet").forEach((element1) => {
