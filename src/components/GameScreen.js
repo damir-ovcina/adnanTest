@@ -12,6 +12,7 @@ import Invader5 from "../assets/aliens/invader5.png";
 const TIMER_INTERVAL = 200;
 let bulletId = 0;
 let allFairedBullets = [];
+let canFire = true;
 
 const GameScreen = () => {
   const [numberOfLives, setNumberOfLives] = useState(3);
@@ -26,21 +27,27 @@ const GameScreen = () => {
     initInvadersArray();
     // movment and fiering key binding
     initialzeKeyBindings();
-    gameEngine();
   }, []);
 
   const initialzeKeyBindings = () => {
     document.addEventListener("keydown", (e) => {
+      e.preventDefault();
       if (e.key === "ArrowLeft") {
         moveLeft();
       } else if (e.key === "ArrowRight") {
+        e.preventDefault();
         moveRight();
       }
     });
 
     document.addEventListener("keyup", (e) => {
       if (e.key === " ") {
-        createBullet();
+        e.preventDefault();
+        if (canFire) {
+          createBullet();
+        } else {
+          return;
+        }
       }
     });
   };
@@ -101,21 +108,17 @@ const GameScreen = () => {
 
     bulletId++;
     allFairedBullets.push(bullet);
-    console.dir(allFairedBullets);
+    canFire = false;
   };
 
   function gameEngine() {
-    setInterval(() => {
-      moveBullets();
-    }, 400);
     // move bullet
-
+    moveBullets();
     // move enemies
     // check colision
     // set result based on destroyed enemies
     // check destruction of rows of enemies and replace them
   }
-
   // ------------------------------------------------------Bullets -----------------------------------------------------------------------------
   function moveBullets() {
     allFairedBullets.forEach((bullet) => {
@@ -130,14 +133,18 @@ const GameScreen = () => {
   }
 
   function removeBulletsIfEndIsReached(bullet) {
-    if (bullet.getBoundingClientRect().y < 50) {
+    if (bullet.getBoundingClientRect().y < 15) {
       bullet.remove();
-      allFairedBullets.pop();
-      console.dir(allFairedBullets);
+      allFairedBullets.shift();
+      canFire = true;
     }
   }
 
   // ----------------------------------------------------------------------------------------------------------------------------------------------
+
+  // ----------------------------------------------------Enemies------------------------------------------------------------------------------------
+
+  // -----------------------------------------------------------------------------------------------------------------------------------------------
 
   const fire = () => {
     // document.querySelectorAll(".bullet").forEach((element1) => {
@@ -202,6 +209,10 @@ const GameScreen = () => {
         "defender"
       ).style.marginLeft = `${(margin += 1)}%`;
   }
+
+  setInterval(() => {
+    gameEngine();
+  }, 100);
 
   return (
     <div className="gameContainer" id="gameContainer">
