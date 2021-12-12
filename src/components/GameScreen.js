@@ -8,13 +8,15 @@ import Invader2 from "../assets/aliens/invader2.png";
 import Invader3 from "../assets/aliens/invader3.png";
 import Invader4 from "../assets/aliens/invader4.png";
 import Invader5 from "../assets/aliens/invader5.png";
+import { Grid } from "semantic-ui-react";
 
-const TIMER_INTERVAL = 200;
+const TIMER_INTERVAL = 100;
 let bulletId = 0;
 let allFairedBullets = [];
+let allEnemies = [];
 let canFire = true;
 
-const GameScreen = () => {
+const GameScreen = ({ props }) => {
   const [numberOfLives, setNumberOfLives] = useState(3);
   const [index, setIndex] = useState();
   const [rowNum, setRowNum] = useState(4);
@@ -24,9 +26,8 @@ const GameScreen = () => {
   const [invaders, setInvaders] = useState([]);
 
   useEffect(() => {
-    initInvadersArray();
-    // movment and fiering key binding
     initialzeKeyBindings();
+    initAllEnemies();
   }, []);
 
   const initialzeKeyBindings = () => {
@@ -52,42 +53,41 @@ const GameScreen = () => {
     });
   };
 
-  const createEnemy = (name, id) => {
-    return (
-      <img
-        src={name}
-        className="invader"
-        style={{ marginRight: "1.5%" }}
-        key={id}
-      />
-    );
+  // ---------------------------Enemies-------------------------------------------
+  const createEnemy = (idNumber) => {
+    let enemy = document.createElement("img");
+
+    enemy.setAttribute("class", "invader");
+    enemy.id = `enemy-${idNumber}`;
+    return enemy;
   };
 
-  const initInvadersArray = () => {
-    let div = [];
-    let i = +1;
-    for (let row = 0; row <= 4; row++) {
-      let cols = [];
-      let rows = [];
-      for (let col = 0; col < 11; col++) {
-        if (row === 0) {
-          cols[col] = createEnemy(Invader1, i++);
-        } else if (row === 1 || row === 5 || row === 9) {
-          cols[col] = cols[col] = createEnemy(Invader2, i++);
-        } else if (row === 2 || row === 6 || row === 10) {
-          cols[col] = cols[col] = cols[col] = createEnemy(Invader2, i++);
-        } else if (row === 3 || row === 7 || row === 11) {
-          cols[col] = cols[col] = cols[col] = createEnemy(Invader3, i++);
-        } else if (row === 4 || row === 8 || row === 12) {
-          cols[col] = cols[col] = cols[col] = createEnemy(Invader4, i++);
-        }
-
-        div.push(cols[col]);
+  const initAllEnemies = () => {
+    for (let i = 0; i < 55; i++) {
+      //let enemy = createEnemy(i);
+      if (i < 11) {
+        // enemy.src = Invader1;
+        allEnemies.push(<img src={Invader1} className="invader" key={i} />);
+      } else if (i < 22) {
+        allEnemies.push(<img src={Invader2} className="invader" key={i} />);
+      } else if (i < 33) {
+        allEnemies.push(<img src={Invader3} className="invader" key={i} />);
+      } else if (i < 44) {
+        allEnemies.push(<img src={Invader4} className="invader" key={i} />);
+      } else if (i < 55) {
+        allEnemies.push(<img src={Invader5} className="invader" key={i} />);
       }
+
+      // allEnemies.push(enemy);
     }
 
-    setInvaders(div);
+    setInvaders(allEnemies);
   };
+
+  // const initInvadersArray = () => {
+
+  // setInvaders(div);
+  // };
 
   let margin = 50;
   let paddingLeft = 25;
@@ -115,6 +115,7 @@ const GameScreen = () => {
     // move bullet
     moveBullets();
     // move enemies
+    invadersMovement();
     // check colision
     // set result based on destroyed enemies
     // check destruction of rows of enemies and replace them
@@ -139,6 +140,15 @@ const GameScreen = () => {
       canFire = true;
     }
   }
+
+  const invadersMovement = () => {
+    invaders.forEach((enemy) => {
+      // let newPosition = enemy.getBoundingClientRect().x;
+      // enemy.style.left = `${(newPosition += 10)}px`;
+      // console.log(enemy);
+      //console.log(invaders);
+    });
+  };
 
   // ----------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -177,6 +187,38 @@ const GameScreen = () => {
     // });
   };
 
+  function moveEnemies() {
+    let enemiesContainer = document.getElementById("all-enemies-container");
+    let leftStyle = enemiesContainer.style.left || 0;
+    let leftValue = leftStyle
+      ? parseInt(leftStyle.slice(0, leftStyle.length - 2))
+      : leftStyle;
+    enemiesContainer.style.left = `${(leftValue += 10)}px`;
+    console.log("right:", enemiesContainer.getBoundingClientRect().right);
+    console.log("left: ", enemiesContainer.getBoundingClientRect().left);
+    console.log("rec: ", enemiesContainer.getBoundingClientRect());
+  }
+
+  function test() {
+    moveEnemies();
+  }
+
+  const destroyEnemy = (enemy) => {
+    let newInvaders = invaders.slice();
+
+    console.log(newInvaders[4]);
+    newInvaders[4] = (
+      <img
+        key={4}
+        style={{
+          display: "none",
+        }}
+      />
+    );
+
+    return setInvaders(newInvaders);
+  };
+
   const game = setInterval(() => {}, TIMER_INTERVAL);
 
   const paddingSetter = () => {
@@ -212,20 +254,67 @@ const GameScreen = () => {
 
   setInterval(() => {
     gameEngine();
-  }, 100);
+  }, TIMER_INTERVAL);
 
   return (
     <div className="gameContainer" id="gameContainer">
       <GameScore />
-      <div
-        className="aliensContainer"
-        style={{ width: "100%", position: "fixed" }}
-        id="aliens"
-      >
-        {invaders.map((invader) => {
-          return invader;
-        })}
+      <div className="aliensContainer" id="aliensContainer">
+        <Grid id={"all-enemies-container"}>
+          <Grid.Row columns={11}>
+            {invaders.map((invader, index) => {
+              if (invader.key < 11) {
+                return (
+                  <Grid.Column column={invader.key}>{invader}</Grid.Column>
+                );
+              }
+
+              //return invader;
+            })}
+          </Grid.Row>
+          <Grid.Row columns={11}>
+            {invaders.map((invader, index) => {
+              if (invader.key > 10 && invader.key < 22) {
+                return (
+                  <Grid.Column columns={invader.key}>{invader}</Grid.Column>
+                );
+              }
+
+              //return invader;
+            })}
+          </Grid.Row>
+          <Grid.Row columns={11}>
+            {invaders.map((invader, index) => {
+              if (invader.key > 21 && invader.key < 33) {
+                return <Grid.Column>{invader}</Grid.Column>;
+              }
+
+              //return invader;
+            })}
+          </Grid.Row>
+          <Grid.Row columns={11}>
+            {invaders.map((invader, index) => {
+              if (invader.key > 32 && invader.key < 44) {
+                return <Grid.Column>{invader}</Grid.Column>;
+              }
+
+              //return invader;
+            })}
+          </Grid.Row>
+          <Grid.Row columns={11}>
+            {invaders.map((invader, index) => {
+              if (invader.key > 43 && invader.key < 55) {
+                return (
+                  <Grid.Column column={invader.key}>{invader}</Grid.Column>
+                );
+              }
+
+              //return invader;
+            })}
+          </Grid.Row>
+        </Grid>
       </div>
+      <button onClick={test}>Test</button>
       <img
         id="defender"
         src={Ship}

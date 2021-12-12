@@ -19,16 +19,28 @@
   height: 5%;
   font-size: 10px;
 }
-.invader {
-  height: 19.2px;
-  width: 19.2px;
-  margin-left: 1%;
-  border-style: none;
+
+#all-enemies-container {
   position: relative;
 }
-.aliensContainer {
-  padding-top: 3%;
-  padding-left: 13%;
+
+.destroyed-invader {
+  height: 30px;
+  width: 30px;
+  border-style: none;
+  margin: 3px;
+  display: none;
+}
+
+.invader {
+  height: 30px;
+  width: 30px;
+  border-style: none;
+  margin: 3px;
+}
+#aliensContainer {
+  width: 400px;
+  margin: 0 auto;
 }
 
 .bullet {
